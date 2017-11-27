@@ -1,0 +1,137 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Data.Entity.Infrastructure;
+using System.Linq;
+using System.Data.Entity;
+using Center.Library.Utilities;
+using Center.Library.Modules.MUser;
+using [NAMESPACE].Models;
+namespace [NAMESPACE].Modules.[MODULEPREFIX][MODULE]
+{
+    public class [MODULE]Service : I[MODULE]Service
+    {
+        private readonly IUserService UserService;
+        private readonly [ENTITY] [ENTITY];
+        public [MODULE]Service(IUserService UserService, [ENTITY] [ENTITY])
+        {
+		    this.UserService = UserService;
+            this.[ENTITY] = [ENTITY];
+        }
+
+        public List<[MODULE]Entity> Get(UserEntity UserEntity,Search[MODULE]Entity Search[MODULE]Entity)
+        {
+            if (Search[MODULE]Entity == null)
+            {
+                Search[MODULE]Entity = new Search[MODULE]Entity();
+            }
+			var [MODULE]Models = [ENTITY].[MODULES]
+			[ARRAYPROPERTIES]
+			.Include(T => T.[ITEM.TYPES])
+			[END]
+			[OBJECTPROPERTIES]
+			.Include(T => T.[ITEM.TYPE])
+			[END]
+			;
+			var [MODULES] = Search[MODULE]Entity.ApplyTo([MODULE]Models);
+             [MODULES] = Search[MODULE]Entity.SkipAndTake([MODULES]);
+            return [MODULES].ToList().Select(P => new [MODULE]Entity(P
+			[ARRAYPROPERTIES]
+			,P.[ITEM.TYPES]
+			[END]
+			[OBJECTPROPERTIES]
+			,P.[ITEM.TYPE]
+			[END]
+			)).ToList();
+        }
+
+        public [MODULE]Entity Get(UserEntity UserEntity,Guid [MODULE]Id)
+        {
+            var [MODULE] = [ENTITY].[MODULES]
+			[ARRAYPROPERTIES]
+			.Include(T => T.[ITEM.TYPES])
+			[END]
+			[OBJECTPROPERTIES]
+			.Include(T => T.[ITEM.TYPE])
+			[END]
+			.FirstOrDefault(V => V.Id.Equals([MODULE]Id));
+            if ([MODULE] == null)
+                throw new BadRequestException("[MODULE] không tồn tại");
+            return new [MODULE]Entity([MODULE]
+			[ARRAYPROPERTIES]
+			,[MODULE].[ITEM.TYPES]
+			[END]
+			[OBJECTPROPERTIES]
+			,[MODULE].[ITEM.TYPE]
+			[END]
+			);
+        }
+
+        public [MODULE]Entity Create(UserEntity UserEntity,[MODULE]Entity [MODULE]Entity)
+        {
+            [MODULE]Entity.Id = Guid.NewGuid();
+            [ENTITY].[MODULES].Add([MODULE]Entity.ToModel());
+            [ENTITY].SaveChanges();
+            return [MODULE]Entity;
+        }
+
+        public [MODULE]Entity Update(UserEntity UserEntity,Guid [MODULE]Id, [MODULE]Entity [MODULE]Entity)
+        {
+            var [MODULE] = [ENTITY].[MODULES].FirstOrDefault(V => V.Id.Equals([MODULE]Id));
+            if ([MODULE] == null)
+                throw new BadRequestException("[MODULE] không tồn tại");
+            [MODULE]Entity.ToModel([MODULE]);
+			[ARRAYPROPERTIES]
+			if ([MODULE]Entity.[ITEM.TYPE]Entities != null)
+            {
+                [MODULE].[ITEM.TYPES].Clear();
+                foreach (var [ITEM.TYPE]Entity in [MODULE]Entity.[ITEM.TYPE]Entities)
+                {
+                    var [ITEM.TYPE] = [ENTITY].[ITEM.TYPES].FirstOrDefault(T => T.Id == [ITEM.TYPE]Entity.Id);
+                    if ([ITEM.TYPE] != null)
+                    {
+                        [MODULE].[ITEM.TYPES].Add([ITEM.TYPE]);
+                    }
+                }
+            }
+			[END]
+			[OBJECTPROPERTIES]
+			if ([MODULE]Entity.[ITEM.TYPE]Entity != null)
+            {
+                var [ITEM.TYPE] = [ENTITY].[ITEM.TYPES].FirstOrDefault(T => T.Id == [MODULE]Entity.[ITEM.TYPE]Entity.Id);
+                if ([ITEM.TYPE] != null)
+                {
+                    [MODULE].[ITEM.TYPE] = [ITEM.TYPE];
+                }
+            }
+			[END]
+            [ENTITY].SaveChanges();
+            return [MODULE]Entity;
+        }
+
+        public bool Delete(UserEntity UserEntity,Guid [MODULE]Id)
+        {
+            var [MODULE] = [ENTITY].[MODULES].FirstOrDefault(V => V.Id.Equals([MODULE]Id));
+            if ([MODULE] == null)
+                throw new BadRequestException("[MODULE] không tồn tại");
+            try
+            {
+                [ENTITY].[MODULES].Remove([MODULE]);
+                [ENTITY].SaveChanges();
+                return true;
+            }
+            catch (DbUpdateException)
+            {
+                throw new BadRequestException("Không thể xóa");
+            }
+        }
+
+        public int Count(UserEntity UserEntity,Search[MODULE]Entity Search[MODULE]Entity)
+        {
+            if (Search[MODULE]Entity == null)
+            {
+                Search[MODULE]Entity = new Search[MODULE]Entity();
+            }
+            return Search[MODULE]Entity.ApplyTo([ENTITY].[MODULES]).Count();
+        }
+    }
+}

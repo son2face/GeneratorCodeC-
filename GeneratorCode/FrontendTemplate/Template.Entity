@@ -1,0 +1,55 @@
+﻿[OBJECTPROPERTIES]
+    import { [ITEM.NAME]Entity } from "../[ITEM.TYPE]/[ITEM.TYPE].Entity";
+[END]
+[ARRAYPROPERTIES]
+    import { [ITEM.NAME]Entity } from "../[ITEM.TYPE]/[ITEM.TYPE].Entity";
+[END]
+export class [MODULE]Entity {
+    [PRIMITIVEPROPERTIES]
+        [ITEM.NAME] : [ITEM.TYPE];
+    [END]
+    [OBJECTPROPERTIES]
+        [ITEM.NAME]Entity: [ITEM.TYPE]Entity;
+    [END]
+    [ARRAYPROPERTIES]
+        [ITEM.NAME]Entities: [ITEM.TYPE]Entity[];
+    [END]
+    IsEdit: boolean;
+    IsActive: boolean = false;
+    IsSelected: boolean = false;
+    constructor([MODULE]: any = null) {
+		if([MODULE] == null){
+			[PRIMITIVEPROPERTIES]
+				this.[ITEM.NAME] = null;
+			[END]
+			[OBJECTPROPERTIES]
+				this.[ITEM.NAME]Entity = new [ITEM.NAME]Entity();
+			[END]
+			[ARRAYPROPERTIES]
+				this.[ITEM.NAME]Entities = [];
+			[END]
+		} else {
+			[PRIMITIVEPROPERTIES]
+				this.[ITEM.NAME] = [MODULE].[ITEM.NAME];
+			[END]
+			[OBJECTPROPERTIES]
+				this.[ITEM.NAME]Entity = [MODULE].[ITEM.NAME]Entity;
+			[END]
+			[ARRAYPROPERTIES]
+				if ([MODULE].[ITEM.NAME]Entities != null) {
+					this.[ITEM.NAME]Entities = [];
+					for (let item of [MODULE].[ITEM.NAME]Entities) {
+						this.[ITEM.NAME]Entities.push(new [ITEM.NAME]Entity(item));
+					}
+				}
+			[END]
+			[OBJECTPROPERTIES]
+				if (this.[ITEM.NAME]Entity == null) this.[ITEM.NAME]Entity = new [ITEM.NAME]Entity();
+			[END]
+			[ARRAYPROPERTIES]
+				if (this.[ITEM.NAME]Entities == null) this.[ITEM.NAME]Entities = [];
+			[END]
+		}
+        this.IsEdit = false;
+    }
+}

@@ -1,0 +1,66 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using [NAMESPACE].Models;
+[OBJECTPROPERTIES]
+using [NAMESPACE].Modules.[MODULEPREFIX][ITEM.TYPE];
+[END]
+[ARRAYPROPERTIES]
+using [NAMESPACE].Modules.[MODULEPREFIX][ITEM.TYPE];
+[END]
+
+namespace [NAMESPACE].Modules.[MODULEPREFIX][MODULE]
+{
+    public class [MODULE]Entity
+    {
+        [PRIMITIVEPROPERTIES]
+        public [ITEM.TYPE] [ITEM.NAME] { get; set; }
+		[END]
+		[OBJECTPROPERTIES]
+		public [ITEM.NAME]Entity [ITEM.NAME]Entity { get; set; }
+		[END]
+        [ARRAYPROPERTIES]
+		public List<[ITEM.NAME]Entity> [ITEM.NAME]Entities { get; set; }
+		[END]
+
+
+        public [MODULE]Entity()
+        {
+        }
+
+        public [MODULE]Entity([MODULE] [MODULE], params object[] Args)
+        {
+            [PRIMITIVEPROPERTIES]
+                [ITEM.NAME] = [MODULE].[ITEM.NAME];
+			[END]
+            foreach (var Arg in Args)
+            {
+            [OBJECTPROPERTIES]
+				if (Arg is [ITEM.NAME]) [ITEM.NAME]Entity = new [ITEM.NAME]Entity(Arg as [ITEM.NAME]);
+			[END]
+			[ARRAYPROPERTIES]
+                if (Arg is IEnumerable<[ITEM.TYPE]>)
+                {
+                    [ITEM.TYPE]Entities = new List<[ITEM.TYPE]Entity>();
+                    foreach (var [ITEM.TYPE] in Arg as IEnumerable<[ITEM.TYPE]>)
+                        [ITEM.TYPE]Entities.Add(new [ITEM.TYPE]Entity([ITEM.TYPE]));
+                }
+			[END]
+			}
+        }
+
+
+        public [MODULE] ToModel([MODULE] [MODULE] = null)
+        {
+            if ([MODULE] == null)
+            {
+                Id = Guid.NewGuid();
+                [MODULE] = new [MODULE] {Id = Id};
+            }
+            [PRIMITIVEPROPERTIES]
+                [MODULE].[ITEM.NAME] = [ITEM.NAME];
+            [END]
+            return [MODULE];
+        }
+    }
+}

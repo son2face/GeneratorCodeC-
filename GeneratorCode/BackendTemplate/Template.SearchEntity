@@ -1,0 +1,37 @@
+﻿using System;
+using System.Linq;
+using [NAMESPACE].Models;
+using [NAMESPACE].Ultilities;
+
+namespace [NAMESPACE].Modules.[MODULEPREFIX][MODULE]
+{
+    public class Search[MODULE]Entity : FilterEntity
+    {
+        [PRIMITIVEPROPERTIES]
+			[IF] [ITEM.TYPE] [EQ] string
+				 public string [ITEM.NAME] { get; set; }
+			[ENDIF]
+			[IF] [ITEM.TYPE] [NE] string [AND] [ITEM.TYPE] [NCT] Nullable
+				public [ITEM.TYPE]? [ITEM.NAME] { get; set; }
+			[ENDIF]
+			[IF] [ITEM.TYPE] [NE] string [AND] [ITEM.TYPE] [CT] Nullable
+				public [ITEM.TYPE] [ITEM.NAME] { get; set; }
+			[ENDIF]
+		[END]
+        public IQueryable<[MODULE]> ApplyTo(IQueryable<[MODULE]> [MODULES])
+        {
+            [PRIMITIVEPROPERTIES]
+				[IF] [ITEM.TYPE] [NE] string
+					if ([ITEM.NAME].HasValue)
+						[MODULES] = [MODULES].Where(T => T.[ITEM.NAME] == [ITEM.NAME].Value);
+				[ENDIF]
+
+				[IF] [ITEM.TYPE] [EQ] string
+				if (!string.IsNullOrEmpty([ITEM.NAME]))
+					[MODULES] = [MODULES].Where(T => T.[ITEM.NAME].Contains([ITEM.NAME]));
+				[ENDIF]
+			[END]
+            return Order([MODULES]);
+        }
+    }
+}

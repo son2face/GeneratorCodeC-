@@ -1,0 +1,16 @@
+﻿using System;
+using System.Collections.Generic;
+using Center.Library.Modules.MUser;
+
+namespace [NAMESPACE].Modules.[MODULEPREFIX][MODULE]
+{
+    public interface I[MODULE]Service
+    {
+        List<[MODULE]Entity> Get(UserEntity UserEntity,,Search[MODULE]Entity Search[MODULE]Entity);
+        int Count(UserEntity UserEntity,Search[MODULE]Entity Search[MODULE]Entity);
+        [MODULE]Entity Get(UserEntity UserEntity,Guid [MODULE]Id);
+        [MODULE]Entity Create(UserEntity UserEntity,[MODULE]Entity [MODULE]Entity);
+        [MODULE]Entity Update(UserEntity UserEntity,Guid [MODULE]Id, [MODULE]Entity [MODULE]Entity);
+        bool Delete(UserEntity UserEntity,Guid [MODULE]Id);
+    }
+}

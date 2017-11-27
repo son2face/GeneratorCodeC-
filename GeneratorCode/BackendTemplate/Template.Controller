@@ -1,0 +1,60 @@
+﻿using System;
+using System.Web.Http;
+
+namespace [NAMESPACE].Modules.[MODULEPREFIX][MODULE]
+{
+
+    [RoutePrefix("api/[MODULES]")]
+    public class [MODULE]Controller : CommonController
+    {
+        private readonly I[MODULE]Service [MODULE]Service;
+        public [MODULE]Controller(I[MODULE]Service [MODULE]Service)
+        {
+            this.[MODULE]Service = [MODULE]Service;
+        }
+
+        [HttpGet]
+        [Route("")]
+        public IHttpActionResult Get([FromUri] Search[MODULE]Entity Search[MODULE]Entity)
+        {
+            return Return([MODULE]Service.Get(UserEntity,Search[MODULE]Entity));
+        }
+
+        [HttpGet]
+        [Route("Count")]
+        public IHttpActionResult Count([FromUri] Search[MODULE]Entity Search[MODULE]Entity)
+        {
+            return Return([MODULE]Service.Count(UserEntity,Search[MODULE]Entity));
+        }
+
+
+        [HttpGet]
+        [Route("{[MODULE]Id}")]
+        public IHttpActionResult Get([FromUri] Guid [MODULE]Id)
+        {
+            return Return([MODULE]Service.Get(UserEntity,[MODULE]Id));
+        }
+
+        [HttpPut]
+        [Route("{[MODULE]Id}")]
+        public IHttpActionResult Put([FromUri] Guid [MODULE]Id, [FromBody] [MODULE]Entity [MODULE]Entity)
+        {
+            return Return([MODULE]Service.Update(UserEntity,[MODULE]Id, [MODULE]Entity));
+        }
+
+        [HttpPost]
+        [Route("")]
+        public IHttpActionResult Post([FromBody] [MODULE]Entity [MODULE]Entity)
+        {
+            return Return([MODULE]Service.Create(UserEntity,[MODULE]Entity));
+        }
+
+
+        [HttpDelete]
+        [Route("{[MODULE]Id}")]
+        public IHttpActionResult Delete([FromUri] Guid [MODULE]Id)
+        {
+            return Return([MODULE]Service.Delete(UserEntity,[MODULE]Id));
+        }
+    }
+}

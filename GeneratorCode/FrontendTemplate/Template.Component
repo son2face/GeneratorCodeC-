@@ -1,0 +1,152 @@
+﻿import { Component, Input, Output, OnInit, EventEmitter, ViewContainerRef  } from '@angular/core';
+import {BottomToastsManager} from "../../Shared/CustomToaster";
+import {PagingModel} from "app/Shared/MaterialComponent/paging/paging.model";
+import { ModalComponent } from "../../Shared/MaterialComponent/modal/modal.component";
+[OBJECTPROPERTIES]
+	import {Search[ITEM.NAME]Entity} from "../[ITEM.NAME]/[ITEM.NAME].SearchEntity";
+[END]
+[ARRAYPROPERTIES]
+	import {Search[ITEM.NAME]Entity} from "../[ITEM.NAME]/[ITEM.NAME].SearchEntity";
+[END]
+import {Search[MODULE]Entity} from "./[MODULE].SearchEntity";
+import {[MODULE]Service} from "./[MODULE].Service";
+import {[MODULE]Entity} from "./[MODULE].Entity";
+@Component({
+    selector: 'App-[MODULE]',
+    templateUrl: './[MODULE].Component.html',
+	styleUrls: ['./[MODULE].Component.css'],
+    providers: [[MODULE]Service, BottomToastsManager]
+})
+
+export class [MODULE]Component {
+    Title : string = "[MODULE]";
+    Trick: string = "&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp";
+	[MODULE]Entities: [MODULE]Entity[];
+	Created[MODULE]Entity: [MODULE]Entity;
+	Edited[MODULE]Entity: [MODULE]Entity;
+    EditPosition: number;
+	Search[MODULE]Entity : Search[MODULE]Entity;
+    DeleteData: [MODULE]Entity;
+	EditModalComponent : ModalComponent ;
+	[OBJECTPROPERTIES]
+		[ITEM.NAME]List: Array<[ITEM.NAME]Entity> = [];
+	[END]
+	[ARRAYPROPERTIES]
+		[ITEM.NAME]List: Array<[ITEM.NAME]Entity> = [];
+	[END]
+	[OBJECTPROPERTIES]
+		Choosed[ITEM.NAME]Item: [ITEM.NAME]Entity = new [ITEM.NAME]Entity();
+	[END]
+	[ARRAYPROPERTIES]
+		Choosed[ITEM.NAME]Item: [ITEM.NAME]Entity = new [ITEM.NAME]Entity();
+	[END]
+	[OBJECTPROPERTIES]
+		Search[ITEM.NAME]Name: string;
+	[END]
+	[ARRAYPROPERTIES]
+		Search[ITEM.NAME]Name: string;
+	[END]
+	PagingModel = new PagingModel(7, 10, data => {
+        this.[MODULE]Service.Get().subscribe(p => {
+            this.[MODULE]Entities = p;
+        });
+    });
+
+    constructor(private [MODULE]Service: [MODULE]Service,
+        private toastr: BottomToastsManager, vcr: ViewContainerRef) {
+        this.Created[MODULE]Entity = new [MODULE]Entity();
+        this.Edited[MODULE]Entity = new [MODULE]Entity();
+        this.Search[MODULE]Entity = new Search[MODULE]Entity();
+        this.Search();
+		this.EditModalComponent = new ModalComponent();
+        this.toastr.setRootViewContainerRef(vcr);
+    }
+
+	Search(){
+        this.Search[MODULE]Entity.Skip = this.PagingModel.Take * this.PagingModel.Active;
+        this.Search[MODULE]Entity.Take = this.PagingModel.Take;
+        this.[MODULE]Service.Get(this.Search[MODULE]Entity).subscribe(p => {
+            this.[MODULE]Entities = p;
+            this.Count();
+        });
+    }
+
+	Count() {
+       this.[MODULE]Service.Count(this.Search[MODULE]Entity).subscribe(data => {
+           this.PagingModel.TotalPage = Math.ceil(data / this.PagingModel.Take);
+       });
+    }
+
+	LoadDataToUpdateModal([MODULE]: [MODULE]Entity, index: number) {
+        this.Edited[MODULE]Entity = new [MODULE]Entity([MODULE]);
+        this.EditPosition = index;
+		 document.getElementById(this.EditModalComponent.ID).click();
+    }
+
+    LoadDataToDelete([MODULE]: [MODULE]Entity) {
+        this.DeleteData = [MODULE];
+    }
+
+    Edit() {
+        this.[MODULE]Service.Update(this.Edited[MODULE]Entity).subscribe(p => {
+            this.[MODULE]Entities[this.EditPosition] = p;
+			this.toastr.ShowSuccess();
+        }, e => {
+            this.toastr.ShowError(e);
+        });
+    }
+
+    Add() {
+        this.[MODULE]Service.Create(this.Created[MODULE]Entity).subscribe(p => {
+            p.IsEdit = true;
+            this.[MODULE]Entities.unshift(p);
+			this.Created[MODULE]Entity = new [MODULE]Entity();
+            this.toastr.ShowSuccess();
+        }, e => {
+            this.toastr.ShowError(e);
+        });
+    }
+
+    Delete() {
+        this.[MODULE]Service.Delete(this.DeleteData).subscribe(p => {
+            let indexOf = this.[MODULE]Entities.indexOf(this.DeleteData);
+            this.[MODULE]Entities.splice(indexOf, 1);
+            this.toastr.ShowSuccess();
+        }, e => {
+            this.toastr.ShowError(e);
+        });
+    }
+
+//    Save([MODULE]Entity: [MODULE]Entity) {
+//        if ([MODULE]Entity.Id === undefined || [MODULE]Entity.Id === null) {
+//            this.[MODULE]Service.Create([MODULE]Entity).subscribe(p => {
+//                Object.assign([MODULE]Entity, p);
+//                [MODULE]Entity.IsEdit = false;
+//                this.toastr.ShowSuccess();
+//            }, e => {
+//                this.toastr.ShowError(e);
+//            });
+//        } else {
+//            this.[MODULE]Service.Update([MODULE]Entity).subscribe(p => {
+//                Object.assign([MODULE]Entity, p);
+//               [MODULE]Entity.IsEdit = false;
+//                this.toastr.ShowSuccess();
+//            }, e => {
+//                this.toastr.ShowError(e);
+//            });
+//        }
+//    }
+
+//    Cancel([MODULE]Entity: [MODULE]Entity) {
+//        if ([MODULE]Entity.Id === undefined || [MODULE]Entity.Id === null) {
+//            this.[MODULE]Entities.splice(0, 1);
+//        } else {
+//            Object.assign([MODULE]Entity, this.temp);
+//            [MODULE]Entity.IsEdit = false;
+//        }
+//    }
+
+
+
+
+}

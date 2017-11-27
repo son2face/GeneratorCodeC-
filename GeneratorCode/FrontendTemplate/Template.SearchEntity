@@ -1,0 +1,18 @@
+﻿import {FilterEntity} from "../../Shared/Filter.Entity";
+[OBJECTPROPERTIES]
+    import { [ITEM.NAME]Entity } from "../[ITEM.TYPE]/[ITEM.TYPE].Entity";
+[END]
+[ARRAYPROPERTIES]
+    import { [ITEM.NAME]Entity } from "../[ITEM.TYPE]/[ITEM.TYPE].Entity";
+[END]
+export class Search[MODULE]Entity extends FilterEntity {
+    [PRIMITIVEPROPERTIES]
+        [ITEM.NAME] : [ITEM.TYPE];
+    [END]
+    constructor([MODULE]: any = null) {
+	super([MODULE]);
+	[PRIMITIVEPROPERTIES]
+         this.[ITEM.NAME] = [MODULE] == null ? null : [MODULE].[ITEM.NAME];
+    [END]
+    }
+}
