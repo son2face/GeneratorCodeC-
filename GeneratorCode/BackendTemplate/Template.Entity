@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using [NAMESPACE].Models;
 [OBJECTPROPERTIES]
-using [NAMESPACE].Modules.[MODULEPREFIX][ITEM.TYPE];
+using [NAMESPACE].[MODULEPREFIX]Admin.[MODULEPREFIX][ITEM.TYPE];
 [END]
 [ARRAYPROPERTIES]
-using [NAMESPACE].Modules.[MODULEPREFIX][ITEM.TYPE];
+using [NAMESPACE].[MODULEPREFIX]Admin.[MODULEPREFIX][ITEM.TYPE];
 [END]
 
-namespace [NAMESPACE].Modules.[MODULEPREFIX][MODULE]
+namespace [NAMESPACE].[MODULEPREFIX]Admin.[MODULEPREFIX][MODULE]
 {
     public class [MODULE]Entity
     {
@@ -17,10 +17,10 @@ namespace [NAMESPACE].Modules.[MODULEPREFIX][MODULE]
         public [ITEM.TYPE] [ITEM.NAME] { get; set; }
 		[END]
 		[OBJECTPROPERTIES]
-		public [ITEM.NAME]Entity [ITEM.NAME]Entity { get; set; }
+		public [ITEM.TYPE]Entity [ITEM.NAME]Entity { get; set; }
 		[END]
         [ARRAYPROPERTIES]
-		public List<[ITEM.NAME]Entity> [ITEM.NAME]Entities { get; set; }
+		public List<[ITEM.TYPE]Entity> [ITEM.NAME]Entities { get; set; }
 		[END]
 
 
@@ -43,7 +43,7 @@ namespace [NAMESPACE].Modules.[MODULEPREFIX][MODULE]
                 {
                     [ITEM.TYPE]Entities = new List<[ITEM.TYPE]Entity>();
                     foreach (var [ITEM.TYPE] in Arg as IEnumerable<[ITEM.TYPE]>)
-                        [ITEM.TYPE]Entities.Add(new [ITEM.TYPE]Entity([ITEM.TYPE]));
+                        [ITEM.NAME]Entities.Add(new [ITEM.TYPE]Entity([ITEM.TYPE]));
                 }
 			[END]
 			}
@@ -54,12 +54,12 @@ namespace [NAMESPACE].Modules.[MODULEPREFIX][MODULE]
         {
             if ([MODULE] == null)
             {
-                Id = Guid.NewGuid();
-                [MODULE] = new [MODULE] {Id = Id};
+                [MODULE] = new [MODULE]();
             }
             [PRIMITIVEPROPERTIES]
                 [MODULE].[ITEM.NAME] = [ITEM.NAME];
             [END]
+			[MODULE].IsDeleted = false;
             return [MODULE];
         }
     }

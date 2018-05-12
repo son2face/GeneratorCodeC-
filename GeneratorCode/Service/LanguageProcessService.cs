@@ -8,6 +8,7 @@ namespace GeneratorCode.Service
     {
         public static string ToPlural(string Single)
         {
+            if (Single.EndsWith("bo")) return Single + "s";
             return PluralizationService.CreateService(CultureInfo.GetCultureInfo("en-us")).Pluralize(Single);
         }
 

@@ -1,134 +1,115 @@
 ﻿<div>
     <div class="row">
         <div class="caption">
-            <span>Danh sách {{Title}}</span>
+            <span>List {{Title}}</span>
         </div>
     </div>
     <div class="row">
         <table class="table table-bordered">
             <thead style="white-space: nowrap">
-            <tr>
-                <th>STT</th>
-                [PRIMITIVEPROPERTIES]
-                <th>[ITEM.NAME]</th>
-                [END]
-                <th></th>
-            </tr>
+                <tr>
+                    <th>STT</th>
+                    [PRIMITIVEPROPERTIES]
+                    [IF] [ITEM.NAME] [NCT] Id [AND] [ITEM.NAME] [NCT] IsDeleted
+                    <th>[ITEM.NAME]</th>
+                    [ENDIF]
+                    [END]
+                    [OBJECTPROPERTIES]
+                    <th>[ITEM.NAME]Name</th>
+                    [END]
+                    <th></th>
+                </tr>
             </thead>
             <tbody>
-            <tr>
-                <td></td>
-                [PRIMITIVEPROPERTIES]
-                <td>
-                    [IF] [ITEM.TYPE] [EQ] string
-                    <input class="form-control" [(ngModel)]="Search[MODULE]Entity.[ITEM.NAME]" type="text" placeholder="Search..." (keydown.enter)="Search()">
+                <tr>
+                    <td></td>
+                    [PRIMITIVEPROPERTIES]
+                    [IF] [ITEM.TYPE] [EQ] string [AND] [ITEM.NAME] [NCT] Id [AND] [ITEM.NAME] [NCT] IsDeleted
+                    <td>
+                        <input class="form-control" [(ngModel)]="Search[MODULE]Entity.[ITEM.NAME]" type="text" placeholder="Search..." (keydown.enter)="Search(Search[MODULE]Entity)">
+                    </td>
                     [ENDIF]
-                    [IF] [ITEM.TYPE] [NE] string
-                    <input class="form-control" [(ngModel)]="Search[MODULE]Entity.[ITEM.NAME]" type="number" placeholder="Search..." (keydown.enter)="Search()">
+                    [IF] [ITEM.TYPE] [NE] string [AND] [ITEM.TYPE] [NE] Date [AND] [ITEM.NAME] [NCT] Id [AND] [ITEM.NAME] [NCT] IsDeleted
+                    <td>
+                        <input class="form-control" [(ngModel)]="Search[MODULE]Entity.[ITEM.NAME]" type="number" placeholder="Search..." (keydown.enter)="Search(Search[MODULE]Entity)">
+                    </td>
                     [ENDIF]
-                </td>
-                [END]
-                <td style="text-align: center">
-                    <app-modal>
-                        <OpenDiv>
-                            <button type="button" class="btn btn-success btn-circle">
-                                <i class="fa fa-plus fa-1x" aria-hidden="true">
-                                </i>
+                    [IF] [ITEM.TYPE] [EQ] Date
+                    <td>
+                        <datetime [(ngModel)]="Search[MODULE]Entity.[ITEM.NAME]"
+                                  [placeholder]="'Search...'" (ngModelChange)="Search(Search[MODULE]Entity)"></datetime>
+                    </td>
+                    [ENDIF]
+                    [END]
+                    [OBJECTPROPERTIES]
+                    <td>
+                        <ng-select-custom [Service]="[ITEM.TYPE]Service" [Entity]="Search[MODULE]Entity.[ITEM.NAME]Name" [BindProperty]="'Name'"
+                                          (Change)="Search[MODULE]Entity.[ITEM.NAME]Name = $event?.Name; Search(Search[MODULE]Entity)" (keyup.enter)="Search(Search[MODULE]Entity)"
+                                          [IsSearch]="true" [Placeholder]="'Search...'"></ng-select-custom>
+                    </td>
+                    [END]
+                    <td style="text-align: center">
+                        <button (click)="Add({IsEdit:true})" type="button" class="btn btn-success btn-circle"><i class="fa fa-plus fa-1x" aria-hidden="true"></i></button>
+                        <button type="button" class="btn btn-success btn-circle"><i class="fa fa-download fa-1x" aria-hidden="true"></i></button>
+                    </td>
+                </tr>
+                <tr *ngFor="let [MODULE] of (Entities ? Entities : []); let i = index">
+                    <td class="text-center">{{PagingModel.Take * PagingModel.Active + i + 1}}</td>
+                    [PRIMITIVEPROPERTIES]
+                    [IF] [ITEM.TYPE] [EQ] string [AND] [ITEM.NAME] [NCT] Id [AND] [ITEM.NAME] [NCT] IsDeleted
+                    <td>
+                        <span *ngIf="![MODULE].IsEdit">{{[MODULE].[ITEM.NAME]}}</span>
+                        <input class="form-control" [(ngModel)]="[MODULE].[ITEM.NAME]" type="text"
+                               placeholder="Enter [ITEM.NAME]..." *ngIf="[MODULE].IsEdit">
+                    </td>
+                    [ENDIF]
+                    [IF] [ITEM.TYPE] [NE] string [AND] [ITEM.TYPE] [NE] Date [AND] [ITEM.NAME] [NCT] Id [AND] [ITEM.NAME] [NCT] IsDeleted
+                    <td>
+                        <span *ngIf="![MODULE].IsEdit">{{[MODULE].[ITEM.NAME]}}</span>
+                        <input class="form-control" [(ngModel)]="[MODULE].[ITEM.NAME]" type="number"
+                               placeholder="Enter [ITEM.NAME]..." *ngIf="[MODULE].IsEdit">
+                    </td>
+                    [ENDIF]
+                    [IF] [ITEM.TYPE] [EQ] Date
+                    <td>
+                        <span *ngIf="![MODULE].IsEdit">{{[MODULE].[ITEM.NAME] | date: 'dd-MM-yyyy'}}</span>
+                        <datetime [(ngModel)]="[MODULE].[ITEM.NAME]" *ngIf="[MODULE].IsEdit" [placeholder]="'Enter [ITEM.NAME]...'"></datetime>
+                    </td>
+                    [ENDIF]
+                    [END]
+                    [OBJECTPROPERTIES]
+                    <td>
+                        <span *ngIf="![MODULE].IsEdit">{{[MODULE].[ITEM.NAME]Entity.Name}}</span>
+                        <ng-select-custom *ngIf="[MODULE].IsEdit" [Service]="[ITEM.TYPE]Service" [Entity]="[MODULE].[ITEM.NAME]Entity" (Change)="[MODULE].[ITEM.NAME]Id = $event?.Id"></ng-select-custom>
+                    </td>
+                    [END]
+                    <td style="text-align: center">
+                        <div *ngIf="![MODULE].IsEdit">
+                            <button type="button" class="btn btn-primary btn-circle"
+                                    (click)="Edit([MODULE])">
+                                <i class="fa fa-edit fa-1x" aria-hidden="true"></i>
                             </button>
-                        </OpenDiv>
-                        <modal-header>
-                            <h5 class="modal-title" id="add_modal">
-                                <i class="fa fa-dropbox" aria-hidden="true"></i>
-                                Thêm {{ Title }}
-                            </h5>
-                        </modal-header>
-                        <modal-body>
-                            [PRIMITIVEPROPERTIES]
-                            <div class="row">
-                                <div class="col-lg-2 col-md-2 col-sm-2" style="padding-bottom: 10px;">
-                                    <label class="control-label">[ITEM.NAME]:</label>
-                                </div>
-                                <div class="col-lg-4 col-md-4 col-sm-4" style="padding-bottom: 10px;">
-                                    <input type="text" class="form-control" placeholder="Nhập [ITEM.NAME]"
-                                            name="[ITEM.NAME]Create" [(ngModel)]="Created[MODULE]Entity.[ITEM.NAME]"
-                                            required/>
-                                </div>
-                            </div>
-                            [END]
-                        </modal-body>
-                        <modal-footer>
-                            <button data-dismiss="modal" data-backdrop="false" (click)="Add()"
-                                    class="btn btn-success">
-                                <i class="fa fa-check" aria-hidden="true"></i> Lưu
+                            <button type="button" class="btn btn-danger btn-circle delete"
+                                    mwlConfirmationPopover [popoverTitle]="'Warning!'"
+                                    [popoverMessage]="'Delete action cannot be back!'"
+                                    placement="left" (confirm)="Delete([MODULE])">
+                                <i class="fa fa-trash fa-1x" aria-hidden="true"></i>
                             </button>
-                            <button type="button" class="btn btn-danger" data-dismiss="modal">
-                                <span><i class="fa fa-times" aria-hidden="true"></i> Hủy</span>
+                        </div>
+                        <div *ngIf="[MODULE].IsEdit">
+                            <button type="button" class="btn btn-primary btn-circle"
+                                    (click)="Save([MODULE])">
+                                <i class="fa fa-floppy-o fa-1x" aria-hidden="true"></i>
                             </button>
-                        </modal-footer>
-                    </app-modal>
-                    <button type="button" class="btn btn-success btn-circle"><i class="fa fa-download fa-1x" aria-hidden="true"></i></button>
-                </td>
-            </tr>
-            <tr *ngFor="let [MODULE] of ([MODULE]Entities ? [MODULE]Entities : []); let i = index">
-                <td>{{PagingModel.Take * PagingModel.Active + i + 1}}</td>
-                [PRIMITIVEPROPERTIES]
-                [IF] [ITEM.TYPE] [EQ] string
-                <td>{{[MODULE]?.[ITEM.NAME]}}</td>
-                [ENDIF]
-                [IF] [ITEM.TYPE] [NE] string
-                <td>{{[MODULE]?.[ITEM.NAME]}}</td>
-                [ENDIF]
-                [END]
-                <td style="text-align: center">
-                    <button type="button" class="btn btn-primary btn-circle" (click)="LoadDataToUpdateModal([MODULE],i)">
-                        <i class="fa fa-edit fa-1x" aria-hidden="true"></i>
-                    </button>
-                    <button type="button" class="btn btn-danger btn-circle delete"
-                            mwlConfirmationPopover [title]="'Bạn có muốn ?' + Trick"
-                            [confirmText]="'Xác nhận'"
-                            [cancelText]="'Hủy'"
-                            [appendToBody]="true"
-                            cancelButtonType="danger"
-                            [message]="'Bạn có chắc chắn xóa trường này?'"
-                            placement="left" (confirm)="LoadDataToDelete([MODULE]);Delete()">
-                        <i class="fa fa-trash fa-1x"
-                           aria-hidden="true"></i>
-                    </button>
-                </td>
-            </tr>
+                            <button type="button" class="btn btn-danger btn-circle delete"
+                                    (click)="Cancel([MODULE])">
+                                <i class="fa fa-remove fa-1x" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
             </tbody>
         </table>
     </div>
 </div>
-<app-paging [PagingModel]="PagingModel" [dot]="true" (onChanges)="Search()"></app-paging>
-<app-modal [OpenModalId]="EditModalComponent.ID">
-    <modal-header>
-        <h5 class="modal-title">
-            <i class="fa fa-dropbox" aria-hidden="true"></i>
-            Sửa {{ Title }}
-        </h5>
-    </modal-header>
-    <modal-body>
-        [PRIMITIVEPROPERTIES]
-        <div class="row">
-            <div class="col-lg-2 col-md-2 col-sm-2" style="padding-bottom: 10px;">
-                <label class="control-label">[ITEM.NAME]:</label>
-            </div>
-            <div class="col-lg-4 col-md-4 col-sm-4" style="padding-bottom: 10px;">
-                <input type="text" class="form-control" placeholder="Nhập [ITEM.NAME]"
-                       name="[ITEM.NAME]Edit" [(ngModel)]="Edited[MODULE]Entity.[ITEM.NAME]"
-                       required />
-            </div>
-         </div>
-         [END]
-    </modal-body>
-    <modal-footer>
-        <button data-dismiss="modal" data-backdrop="false" (click)="Edit()"
-                class="btn btn-success">
-            <i class="fa fa-check" aria-hidden="true"></i> Sửa
-        </button>
-        <button type="button" class="btn btn-danger" data-dismiss="modal">
-            <span><i class="fa fa-times" aria-hidden="true"></i> Hủy</span>
-        </button>
-    </modal-footer>
-</app-modal>
+<app-paging [PagingModel]="PagingModel" [dot]="true" (onChanges)="Search(Search[MODULE]Entity,true)"></app-paging>

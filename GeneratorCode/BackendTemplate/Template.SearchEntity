@@ -1,37 +1,47 @@
 ﻿using System;
 using System.Linq;
 using [NAMESPACE].Models;
-using [NAMESPACE].Ultilities;
+using [NAMESPACE].[MODULEPREFIX]Admin;
 
-namespace [NAMESPACE].Modules.[MODULEPREFIX][MODULE]
+namespace [NAMESPACE].[MODULEPREFIX]Admin.[MODULEPREFIX][MODULE]
 {
-    public class Search[MODULE]Entity : FilterEntity
+    public class Search[MODULE]Entity : FilterEntity<[MODULE]>
     {
         [PRIMITIVEPROPERTIES]
 			[IF] [ITEM.TYPE] [EQ] string
 				 public string [ITEM.NAME] { get; set; }
 			[ENDIF]
-			[IF] [ITEM.TYPE] [NE] string [AND] [ITEM.TYPE] [NCT] Nullable
+			[IF] [ITEM.TYPE] [NE] string [AND] [ITEM.TYPE] [NCT] Nullable [AND] [ITEM.TYPE] [NCT] ?
 				public [ITEM.TYPE]? [ITEM.NAME] { get; set; }
 			[ENDIF]
 			[IF] [ITEM.TYPE] [NE] string [AND] [ITEM.TYPE] [CT] Nullable
 				public [ITEM.TYPE] [ITEM.NAME] { get; set; }
 			[ENDIF]
+			[IF] [ITEM.TYPE] [NE] string [AND] [ITEM.TYPE] [CT] ?
+				public [ITEM.TYPE] [ITEM.NAME] { get; set; }
+			[ENDIF]
 		[END]
-        public IQueryable<[MODULE]> ApplyTo(IQueryable<[MODULE]> [MODULES])
+		[OBJECTPROPERTIES]
+			public string [ITEM.NAME]Name { get; set; }
+		[END]
+        public override IQueryable<[MODULE]> ApplyTo(IQueryable<[MODULE]> [MODULES])
         {
+			[MODULES] = [MODULES].Where([MODULE] => [MODULE].IsDeleted == false);
             [PRIMITIVEPROPERTIES]
 				[IF] [ITEM.TYPE] [NE] string
 					if ([ITEM.NAME].HasValue)
-						[MODULES] = [MODULES].Where(T => T.[ITEM.NAME] == [ITEM.NAME].Value);
+						[MODULES] = [MODULES].Where([MODULE] => [MODULE].[ITEM.NAME] == [ITEM.NAME].Value);
 				[ENDIF]
-
 				[IF] [ITEM.TYPE] [EQ] string
 				if (!string.IsNullOrEmpty([ITEM.NAME]))
-					[MODULES] = [MODULES].Where(T => T.[ITEM.NAME].Contains([ITEM.NAME]));
+					[MODULES] = [MODULES].Where([MODULE] => [MODULE].[ITEM.NAME].Contains([ITEM.NAME]));
 				[ENDIF]
 			[END]
-            return Order([MODULES]);
+			[OBJECTPROPERTIES]
+				if (!string.IsNullOrEmpty([ITEM.NAME]Name))
+					[MODULES] = [MODULES].Where([MODULE] => [MODULE].[ITEM.NAME].Name.Contains([ITEM.NAME]Name));
+			[END]
+            return OrderBy([MODULES]);
         }
     }
 }

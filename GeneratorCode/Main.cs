@@ -8,6 +8,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml;
+using System.Xml.Serialization;
 using GeneratorCode.Interface;
 using GeneratorCode.Model;
 using GeneratorCode.Service;
@@ -83,27 +85,37 @@ namespace GeneratorCode
         {
             foreach (var ModuleModel in ModuleService.Get())
             {
-                var Dir = $@"{FrontEndFolderTb.Text}\{ModuleModel.Name}";
-                Directory.CreateDirectory(Dir);
-                FileService.Create($@"{Dir}\{ModuleModel.Name}.Entity.ts",
+                var ModuleDir = $@"{FrontEndFolderTb.Text}\Modules\{ModuleModel.Name}";
+                var UIDir = $@"{FrontEndFolderTb.Text}\UI\{ModuleModel.Name}";
+                try { Directory.Delete(ModuleDir); } catch (Exception e) { };
+                Directory.CreateDirectory(ModuleDir);
+                if(cbEntityFE.Checked)
+                FileService.Create($@"{ModuleDir}\{ModuleModel.Name}.Entity.ts",
                     GenerateFrontendTemplate(FileService.ReadFile(@"FrontendTemplate\Template.Entity"), ModuleModel));
-                FileService.Create($@"{Dir}\{ModuleModel.Name}.Service.ts",
+                if(cbServiceFE.Checked)
+                    FileService.Create($@"{ModuleDir}\{ModuleModel.Name}.Service.ts",
                     GenerateFrontendTemplate(FileService.ReadFile(@"FrontendTemplate\Template.Service"), ModuleModel));
 //                FileService.Create($@"{Dir}\{ModuleModel.Name}.Interface.ts",
 //                    GenerateFrontendTemplate(FileService.ReadFile(@"FrontendTemplate\Template.Interface"),
 //                        ModuleModel));
-                FileService.Create($@"{Dir}\{ModuleModel.Name}.SearchEntity.ts",
+                if(cbSearchFE.Checked)
+                    FileService.Create($@"{ModuleDir}\{ModuleModel.Name}.SearchEntity.ts",
                     GenerateFrontendTemplate(FileService.ReadFile(@"FrontendTemplate\Template.SearchEntity"),
                         ModuleModel));
-                FileService.Create($@"{Dir}\{ModuleModel.Name}.Component.ts",
+                try { Directory.Delete(UIDir); } catch (Exception e) { };
+                Directory.CreateDirectory(UIDir);
+                if(cbComponentFE.Checked)
+                    FileService.Create($@"{UIDir}\{ModuleModel.Name}.Component.ts",
                     GenerateFrontendTemplate(FileService.ReadFile(@"FrontendTemplate\Template.Component"),
                         ModuleModel));
-                FileService.Create($@"{Dir}\{ModuleModel.Name}.Component.html",
+                if(cbHTMLFE.Checked)
+                    FileService.Create($@"{UIDir}\{ModuleModel.Name}.Component.html",
                     GenerateFrontendTemplate(FileService.ReadFile(@"FrontendTemplate\Template.Html"), ModuleModel));
-                FileService.Create($@"{Dir}\{ModuleModel.Name}.Component.css",
+                if(cbCSSFE.Checked)
+                    FileService.Create($@"{UIDir}\{ModuleModel.Name}.Component.css",
                     GenerateFrontendTemplate(FileService.ReadFile(@"FrontendTemplate\Template.Css"), ModuleModel));
-                FileService.Create($@"{Dir}\{ModuleModel.Name}.Component.spec.ts",
-                    GenerateFrontendTemplate(FileService.ReadFile(@"FrontendTemplate\Template.Test"), ModuleModel));
+                //FileService.Create($@"{UIDir}\{ModuleModel.Name}.Component.spec.ts",
+                //    GenerateFrontendTemplate(FileService.ReadFile(@"FrontendTemplate\Template.Test"), ModuleModel));
             }
             Console.WriteLine("Done");
         }
@@ -140,7 +152,16 @@ namespace GeneratorCode
                     {
                         case "long":
                         case "int":
+                        case "double":
+                        case "float":
                             Type = "number";
+                            break;
+                        case "bool":
+                            Type = "boolean";
+                            break;
+                        case "DateTime":
+                        case "DateTime?":
+                            Type = "Date";
                             break;
                         default:
                             Type = "string";
@@ -194,20 +215,26 @@ namespace GeneratorCode
             foreach (var ModuleModel in ModuleService.Get())
             {
                 var Dir = $@"{BackendFolderTb.Text}\{PrefixTb.Text}{ModuleModel.Name}";
+                try { Directory.Delete(Dir); } catch (Exception e) { };
                 Directory.CreateDirectory(Dir);
-                FileService.Create($@"{Dir}\{ModuleModel.Name}Controller.cs",
+                if (cbControllerBE.Checked)
+                    FileService.Create($@"{Dir}\{ModuleModel.Name}Controller.cs",
                     GenerateBackendTemplate(FileService.ReadFile(@"BackendTemplate\Template.Controller"),
                         ModuleModel, NameSpaceTb.Text, EntityTb.Text, PrefixTb.Text));
-                FileService.Create($@"{Dir}\{ModuleModel.Name}Service.cs",
+                if (cbServiceBE.Checked)
+                    FileService.Create($@"{Dir}\{ModuleModel.Name}Service.cs",
                     GenerateBackendTemplate(FileService.ReadFile(@"BackendTemplate\Template.Service"), ModuleModel,
                         NameSpaceTb.Text, EntityTb.Text, PrefixTb.Text));
-                FileService.Create($@"{Dir}\I{ModuleModel.Name}Service.cs",
+                if (cbInterfaceBE.Checked)
+                    FileService.Create($@"{Dir}\I{ModuleModel.Name}Service.cs",
                     GenerateBackendTemplate(FileService.ReadFile(@"BackendTemplate\Template.Interface"),
                         ModuleModel, NameSpaceTb.Text, EntityTb.Text, PrefixTb.Text));
-                FileService.Create($@"{Dir}\Search{ModuleModel.Name}Entity.cs",
+                if (cbSearchBE.Checked)
+                    FileService.Create($@"{Dir}\Search{ModuleModel.Name}Entity.cs",
                     GenerateBackendTemplate(FileService.ReadFile(@"BackendTemplate\Template.SearchEntity"),
                         ModuleModel, NameSpaceTb.Text, EntityTb.Text, PrefixTb.Text));
-                FileService.Create($@"{Dir}\{ModuleModel.Name}Entity.cs",
+                if (cbEntityBE.Checked)
+                    FileService.Create($@"{Dir}\{ModuleModel.Name}Entity.cs",
                     GenerateBackendTemplate(FileService.ReadFile(@"BackendTemplate\Template.Entity"), ModuleModel,
                         NameSpaceTb.Text, EntityTb.Text, PrefixTb.Text));
             }
@@ -340,6 +367,69 @@ namespace GeneratorCode
                 case 1:
                     break;
             }
+        }
+        public void SerializeObject<T>(T serializableObject, string fileName)
+        {
+            if (serializableObject == null) { return; }
+
+            try
+            {
+                XmlDocument xmlDocument = new XmlDocument();
+                XmlSerializer serializer = new XmlSerializer(serializableObject.GetType());
+                using (MemoryStream stream = new MemoryStream())
+                {
+                    serializer.Serialize(stream, serializableObject);
+                    stream.Position = 0;
+                    xmlDocument.Load(stream);
+                    xmlDocument.Save(fileName);
+                    stream.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                //Log exception here
+            }
+        }
+
+
+        /// <summary>
+        /// Deserializes an xml file into an object list
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        public T DeSerializeObject<T>(string fileName)
+        {
+            if (string.IsNullOrEmpty(fileName)) { return default(T); }
+
+            T objectOut = default(T);
+
+            try
+            {
+                XmlDocument xmlDocument = new XmlDocument();
+                xmlDocument.Load(fileName);
+                string xmlString = xmlDocument.OuterXml;
+
+                using (StringReader read = new StringReader(xmlString))
+                {
+                    Type outType = typeof(T);
+
+                    XmlSerializer serializer = new XmlSerializer(outType);
+                    using (XmlReader reader = new XmlTextReader(read))
+                    {
+                        objectOut = (T)serializer.Deserialize(reader);
+                        reader.Close();
+                    }
+
+                    read.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                //Log exception here
+            }
+
+            return objectOut;
         }
     }
 }

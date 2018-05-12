@@ -1,18 +1,31 @@
-﻿import {FilterEntity} from "../../Shared/Filter.Entity";
-[OBJECTPROPERTIES]
-    import { [ITEM.NAME]Entity } from "../[ITEM.TYPE]/[ITEM.TYPE].Entity";
-[END]
-[ARRAYPROPERTIES]
-    import { [ITEM.NAME]Entity } from "../[ITEM.TYPE]/[ITEM.TYPE].Entity";
-[END]
-export class Search[MODULE]Entity extends FilterEntity {
-    [PRIMITIVEPROPERTIES]
-        [ITEM.NAME] : [ITEM.TYPE];
-    [END]
-    constructor([MODULE]: any = null) {
-	super([MODULE]);
+﻿import { ISearchEntity } from '../../../shared/CodeInterface/ISearchEntity.Entity';
+export class Search[MODULE]Entity extends ISearchEntity {
+	[OBJECTPROPERTIES]
+		[ITEM.NAME]Name : string = '';
+	[END]
 	[PRIMITIVEPROPERTIES]
-         this.[ITEM.NAME] = [MODULE] == null ? null : [MODULE].[ITEM.NAME];
+		[IF] [ITEM.TYPE] [EQ] string [AND] [ITEM.NAME] [NE] Id
+			[ITEM.NAME] : [ITEM.TYPE] = '';
+		[ENDIF]
+		[IF] [ITEM.TYPE] [NE] string [AND] [ITEM.NAME] [NE] Id
+			[ITEM.NAME] : [ITEM.TYPE];
+		[ENDIF]
     [END]
+
+    constructor([MODULE]: any = null) {
+		super([MODULE]);
+		if ([MODULE] != null){
+			[PRIMITIVEPROPERTIES]
+				[IF] [ITEM.TYPE] [EQ] string [AND] [ITEM.NAME] [NE] Id
+					this.[ITEM.NAME] = [MODULE].[ITEM.NAME];
+				[ENDIF]
+				[IF] [ITEM.TYPE] [NE] string [AND] [ITEM.NAME] [NE] Id
+					this.[ITEM.NAME] = [MODULE].[ITEM.NAME];
+				[ENDIF]
+			[END]
+			[OBJECTPROPERTIES]
+			 this.[ITEM.NAME]Name = [MODULE].[ITEM.NAME]Name;
+			[END]
+		}
     }
 }

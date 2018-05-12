@@ -1,24 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity.Infrastructure;
 using System.Linq;
-using System.Data.Entity;
-using Center.Library.Utilities;
-using Center.Library.Modules.MUser;
+using Microsoft.EntityFrameworkCore;
 using [NAMESPACE].Models;
-namespace [NAMESPACE].Modules.[MODULEPREFIX][MODULE]
+using [NAMESPACE].[MODULEPREFIX]Admin.[MODULEPREFIX]Employee;
+namespace [NAMESPACE].[MODULEPREFIX]Admin.[MODULEPREFIX][MODULE]
 {
     public class [MODULE]Service : I[MODULE]Service
     {
-        private readonly IUserService UserService;
+        private readonly IEmployeeService EmployeeService;
         private readonly [ENTITY] [ENTITY];
-        public [MODULE]Service(IUserService UserService, [ENTITY] [ENTITY])
+        public [MODULE]Service(IEmployeeService EmployeeService, [ENTITY] [ENTITY])
         {
-		    this.UserService = UserService;
+		    this.EmployeeService = EmployeeService;
             this.[ENTITY] = [ENTITY];
         }
 
-        public List<[MODULE]Entity> Get(UserEntity UserEntity,Search[MODULE]Entity Search[MODULE]Entity)
+        public List<[MODULE]Entity> Gets(EmployeeEntity EmployeeEntity,Search[MODULE]Entity Search[MODULE]Entity)
         {
             if (Search[MODULE]Entity == null)
             {
@@ -44,7 +42,7 @@ namespace [NAMESPACE].Modules.[MODULEPREFIX][MODULE]
 			)).ToList();
         }
 
-        public [MODULE]Entity Get(UserEntity UserEntity,Guid [MODULE]Id)
+        public [MODULE]Entity Get(EmployeeEntity EmployeeEntity,int [MODULE]Id)
         {
             var [MODULE] = [ENTITY].[MODULES]
 			[ARRAYPROPERTIES]
@@ -66,15 +64,31 @@ namespace [NAMESPACE].Modules.[MODULEPREFIX][MODULE]
 			);
         }
 
-        public [MODULE]Entity Create(UserEntity UserEntity,[MODULE]Entity [MODULE]Entity)
+        public [MODULE]Entity Create(EmployeeEntity EmployeeEntity,[MODULE]Entity [MODULE]Entity)
         {
-            [MODULE]Entity.Id = Guid.NewGuid();
-            [ENTITY].[MODULES].Add([MODULE]Entity.ToModel());
-            [ENTITY].SaveChanges();
+		try
+            {
+			 //[MODULE]Entity.Id = Guid.NewGuid();
+				var [MODULE] = [MODULE]Entity.ToModel();
+				[ENTITY].[MODULES].Add([MODULE]);
+				[ENTITY].SaveChanges();
+                [MODULE]Entity = new [MODULE]Entity(P
+					[ARRAYPROPERTIES]
+					,P.[ITEM.TYPES]
+					[END]
+					[OBJECTPROPERTIES]
+					,P.[ITEM.TYPE]
+					[END]
+				)
+            }
+            catch (Exception e)
+            {
+                throw new BadRequestException(e.Message);
+            }
             return [MODULE]Entity;
         }
 
-        public [MODULE]Entity Update(UserEntity UserEntity,Guid [MODULE]Id, [MODULE]Entity [MODULE]Entity)
+        public [MODULE]Entity Update(EmployeeEntity EmployeeEntity,int [MODULE]Id, [MODULE]Entity [MODULE]Entity)
         {
             var [MODULE] = [ENTITY].[MODULES].FirstOrDefault(V => V.Id.Equals([MODULE]Id));
             if ([MODULE] == null)
@@ -108,24 +122,20 @@ namespace [NAMESPACE].Modules.[MODULEPREFIX][MODULE]
             return [MODULE]Entity;
         }
 
-        public bool Delete(UserEntity UserEntity,Guid [MODULE]Id)
+        public [MODULE]Entity Delete(EmployeeEntity EmployeeEntity,int [MODULE]Id)
         {
             var [MODULE] = [ENTITY].[MODULES].FirstOrDefault(V => V.Id.Equals([MODULE]Id));
             if ([MODULE] == null)
                 throw new BadRequestException("[MODULE] không tồn tại");
-            try
-            {
-                [ENTITY].[MODULES].Remove([MODULE]);
-                [ENTITY].SaveChanges();
-                return true;
-            }
-            catch (DbUpdateException)
-            {
-                throw new BadRequestException("Không thể xóa");
-            }
+			if ([MODULE].IsDeleted == true)
+                throw new BadRequestException("[MODULE] đã được xóa!");
+            [MODULE].IsDeleted = true;
+            [ENTITY].SaveChanges();
+			[MODULE]Entity = Get(EmployeeEntity, [MODULE]Id);
+			return new [MODULE]Entity([MODULE]);
         }
 
-        public int Count(UserEntity UserEntity,Search[MODULE]Entity Search[MODULE]Entity)
+        public int Count(EmployeeEntity EmployeeEntity,Search[MODULE]Entity Search[MODULE]Entity)
         {
             if (Search[MODULE]Entity == null)
             {

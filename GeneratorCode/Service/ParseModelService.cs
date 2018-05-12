@@ -24,9 +24,22 @@ namespace GeneratorCode.Service
                     {
                         break;
                     }
-                    PropertyModels.Add(Words[I + 1].Equals("virtual")
-                        ? new PropertyModel {Name = Words[I + 3], Type = Words[I + 2], IsVirtual = true}
-                        : new PropertyModel {Name = Words[I + 2], Type = Words[I + 1], IsVirtual = false});
+                    if (Words[I + 1].Contains("virtual") || (
+                      !Words[I + 1].Contains("int") &&
+                      !Words[I + 1].Contains("string") &&
+                      !Words[I + 1].Contains("TimeSpan") &&
+                       !Words[I + 1].Contains("bool") &&
+                       !Words[I + 1].Contains("double") &&
+                       !Words[I + 1].Contains("float") &&
+                      !Words[I + 1].Contains("DateTime")))
+                    {
+                        PropertyModels.Add(new PropertyModel { Name = Words[I + 2], Type = Words[I + 1], IsVirtual = true });
+                    }
+                    else
+                    {
+                        PropertyModels.Add(new PropertyModel { Name = Words[I + 2], Type = Words[I + 1], IsVirtual = false });
+                    }
+
                 }
             }
             return PropertyModels;
