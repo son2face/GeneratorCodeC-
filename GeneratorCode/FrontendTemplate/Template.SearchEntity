@@ -1,11 +1,11 @@
 ﻿import { ISearchEntity } from '../../../shared/CodeInterface/ISearchEntity.Entity';
 export class Search[MODULE]Entity extends ISearchEntity {
 	[OBJECTPROPERTIES]
-		[ITEM.NAME]Name : string = '';
+		[ITEM.NAME]Name : string = null;
 	[END]
 	[PRIMITIVEPROPERTIES]
 		[IF] [ITEM.TYPE] [EQ] string [AND] [ITEM.NAME] [NE] Id
-			[ITEM.NAME] : [ITEM.TYPE] = '';
+			[ITEM.NAME] : [ITEM.TYPE] = null;
 		[ENDIF]
 		[IF] [ITEM.TYPE] [NE] string [AND] [ITEM.NAME] [NE] Id
 			[ITEM.NAME] : [ITEM.TYPE];

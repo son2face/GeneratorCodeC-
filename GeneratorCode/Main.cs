@@ -157,6 +157,7 @@ namespace GeneratorCode
                             Type = "number";
                             break;
                         case "bool":
+                        case "bool?":
                             Type = "boolean";
                             break;
                         case "DateTime":
