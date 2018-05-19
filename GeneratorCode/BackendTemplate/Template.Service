@@ -16,7 +16,7 @@ namespace [NAMESPACE].[MODULEPREFIX]Admin.[MODULEPREFIX][MODULE]
             this.[ENTITY] = [ENTITY];
         }
 
-        public List<[MODULE]Entity> Gets(EmployeeEntity EmployeeEntity,Search[MODULE]Entity Search[MODULE]Entity)
+        public List<[MODULE]Entity> GetList(EmployeeEntity EmployeeEntity,Search[MODULE]Entity Search[MODULE]Entity)
         {
             if (Search[MODULE]Entity == null)
             {
@@ -32,12 +32,12 @@ namespace [NAMESPACE].[MODULEPREFIX]Admin.[MODULEPREFIX][MODULE]
 			;
 			var [MODULES] = Search[MODULE]Entity.ApplyTo([MODULE]Models);
              [MODULES] = Search[MODULE]Entity.SkipAndTake([MODULES]);
-            return [MODULES].ToList().Select(P => new [MODULE]Entity(P
+            return [MODULES].ToList().Select(P => new [MODULE]Entity([MODULE]
 			[ARRAYPROPERTIES]
-			,P.[ITEM.TYPES]
+			,[MODULE].[ITEM.TYPES]
 			[END]
 			[OBJECTPROPERTIES]
-			,P.[ITEM.TYPE]
+			,[MODULE].[ITEM.TYPE]
 			[END]
 			)).ToList();
         }
@@ -68,18 +68,10 @@ namespace [NAMESPACE].[MODULEPREFIX]Admin.[MODULEPREFIX][MODULE]
         {
 		try
             {
-			 //[MODULE]Entity.Id = Guid.NewGuid();
 				var [MODULE] = [MODULE]Entity.ToModel();
 				[ENTITY].[MODULES].Add([MODULE]);
 				[ENTITY].SaveChanges();
-                [MODULE]Entity = new [MODULE]Entity(P
-					[ARRAYPROPERTIES]
-					,P.[ITEM.TYPES]
-					[END]
-					[OBJECTPROPERTIES]
-					,P.[ITEM.TYPE]
-					[END]
-				)
+			    [MODULE]Entity.Id = [MODULE].Id;
             }
             catch (Exception e)
             {
