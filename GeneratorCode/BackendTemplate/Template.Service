@@ -32,7 +32,7 @@ namespace [NAMESPACE].[MODULEPREFIX]Admin.[MODULEPREFIX][MODULE]
 			;
 			var [MODULES] = Search[MODULE]Entity.ApplyTo([MODULE]Models);
              [MODULES] = Search[MODULE]Entity.SkipAndTake([MODULES]);
-            return [MODULES].ToList().Select(P => new [MODULE]Entity([MODULE]
+            return [MODULES].ToList().Select([MODULE] => new [MODULE]Entity([MODULE]
 			[ARRAYPROPERTIES]
 			,[MODULE].[ITEM.TYPES]
 			[END]

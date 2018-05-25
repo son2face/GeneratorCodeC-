@@ -41,7 +41,7 @@ namespace [NAMESPACE].[MODULEPREFIX]Admin.[MODULEPREFIX][MODULE]
 			[ARRAYPROPERTIES]
                 if (Arg is IEnumerable<[ITEM.TYPE]>)
                 {
-                    [ITEM.TYPE]Entities = new List<[ITEM.TYPE]Entity>();
+                    [ITEM.NAME]Entities = new List<[ITEM.TYPE]Entity>();
                     foreach (var [ITEM.TYPE] in Arg as IEnumerable<[ITEM.TYPE]>)
                         [ITEM.NAME]Entities.Add(new [ITEM.TYPE]Entity([ITEM.TYPE]));
                 }
